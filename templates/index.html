@@ -148,10 +148,18 @@
 
         {% if results %}
             <div class="result">
+                <h2>Summary of Your Input</h2>
+                    <p><strong>Number of AC units:</strong> {{ results.num_ac }}</p>
+                    <p><strong>Hours ON per day:</strong> {{ results.hours_on }}</p>
+                    <p><strong>AC Horsepower:</strong> {{ results.ac_type }} HP</p>
+                    <p><strong>Current Temperature:</strong> {{ results.current_temp }} °C</p>
+                    <p><strong>Target Temperature:</strong> {{ results.target_temp }} °C</p>
+                    <p><strong>Electricity Cost:</strong> MYR {{ results.cost_per_kwh }} per kWh</p>
+                
                 <h2>Estimated Savings</h2>
-                <p>Energy saved per day: <strong>{{ results.kwh_day | default(0) | round(2) }} kWh</strong></p>
-                <p>Money saved per day: <strong>MYR {{ results.money_day | default(0) | round(2) }}</strong></p>
-                <p>Carbon reduced per day: <strong>{{ results.carbon_day | default(0) | round(2) }} kg CO₂</strong></p>
+                    <p>Energy saved per day: <strong>{{ results.kwh_day | default(0) | round(2) }} kWh</strong></p>
+                    <p>Money saved per day: <strong>MYR {{ results.money_day | default(0) | round(2) }}</strong></p>
+                    <p>Carbon reduced per day: <strong>{{ results.carbon_day | default(0) | round(2) }} kg CO₂</strong></p>
 
                 <div class="time-period">
                     <h3>Time Period Savings:</h3>
