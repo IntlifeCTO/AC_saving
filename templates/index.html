@@ -1,66 +1,166 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AC Energy Saving Calculator</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        label { display: block; margin-top: 10px; }
-        input, select { padding: 5px; width: 200px; }
-        .result { margin-top: 20px; }
-        .error { color: red; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .result {
+            background-color: #e7f7e7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .result h2 {
+            margin-top: 0;
+        }
+
+        .result p {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .result p strong {
+            font-weight: bold;
+        }
+
+        .result .time-period {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+        }
+
+        .result .time-period p {
+            margin: 5px 0;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>AC Energy Saving Calculator</h1>
 
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
+    <div class="container">
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
 
-    <form method="post">
-        <label>Number of AC units:
+        <form method="post">
+            <label for="num_ac">Number of AC units:</label>
             <input type="number" name="num_ac" required>
-        </label>
 
-        <label>Hours AC is ON per day:
+            <label for="hours_on">Hours AC is ON per day:</label>
             <input type="number" name="hours_on" step="0.1" required>
-        </label>
 
-        <label>Type of AC (1 or 2 horsepower):
+            <label for="ac_type">Type of AC (1 or 2 horsepower):</label>
             <select name="ac_type" required>
                 <option value="1">1 HP</option>
                 <option value="2">2 HP</option>
             </select>
-        </label>
 
-        <label>Current Temperature:
+            <label for="current_temp">Current Temperature:</label>
             <input type="number" name="current_temp" required>
-        </label>
 
-        <label>Target Temperature:
+            <label for="target_temp">Target Temperature:</label>
             <input type="number" name="target_temp" required>
-        </label>
 
-        <label>Electricity Cost per kWh (MYR):
+            <label for="cost_per_kwh">Electricity Cost per kWh (MYR):</label>
             <input type="number" name="cost_per_kwh" step="0.001" value="0.435" required>
-        </label>
 
-        <button type="submit" style="margin-top: 10px;">Calculate</button>
-    </form>
+            <button type="submit">Calculate</button>
+        </form>
 
-    {% if results %}
-        <div class="result">
-            <h2>Estimated Savings</h2>
-            <p>Energy saved per day: {{ results.kwh_day | round(2) }} kWh</p>
-            <p>Money saved per day: MYR {{ results.money_day | round(2) }}</p>
-            <p>Carbon reduced per day: {{ results.carbon_day | round(2) }} kg CO₂</p>
+        {% if results %}
+            <div class="result">
+                <h2>Estimated Savings</h2>
+                <p>Energy saved per day: <strong>{{ results.kwh_day | round(2) }} kWh</strong></p>
+                <p>Money saved per day: <strong>MYR {{ results.money_day | round(2) }}</strong></p>
+                <p>Carbon reduced per day: <strong>{{ results.carbon_day | round(2) }} kg CO₂</strong></p>
 
-            <h3>Time Period Savings:</h3>
-            <p><strong>Week:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
-            <p><strong>Month:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
-            <p><strong>Year:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
-        </div>
-    {% endif %}
+                <div class="time-period">
+                    <h3>Time Period Savings:</h3>
+                    <p><strong>Week:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
+                    <p><strong>Month:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
+                    <p><strong>Year:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
