@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AC Energy Saving Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        label { display: block; margin-top: 10px; }
+        input, select { padding: 5px; width: 200px; }
+        .result { margin-top: 20px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>AC Energy Saving Calculator</h1>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        <label>Number of AC units:
+            <input type="number" name="num_ac" required>
+        </label>
+
+        <label>Hours AC is ON per day:
+            <input type="number" name="hours_on" step="0.1" required>
+        </label>
+
+        <label>Type of AC (1 or 2 horsepower):
+            <select name="ac_type" required>
+                <option value="1">1 HP</option>
+                <option value="2">2 HP</option>
+            </select>
+        </label>
+
+        <label>Current Temperature:
+            <input type="number" name="current_temp" required>
+        </label>
+
+        <label>Target Temperature:
+            <input type="number" name="target_temp" required>
+        </label>
+
+        <label>Electricity Cost per kWh (MYR):
+            <input type="number" name="cost_per_kwh" step="0.001" value="0.435" required>
+        </label>
+
+        <button type="submit" style="margin-top: 10px;">Calculate</button>
+    </form>
+
+    {% if results %}
+        <div class="result">
+            <h2>Estimated Savings</h2>
+            <p>Energy saved per day: {{ results.kwh_day | round(2) }} kWh</p>
+            <p>Money saved per day: MYR {{ results.money_day | round(2) }}</p>
+            <p>Carbon reduced per day: {{ results.carbon_day | round(2) }} kg CO₂</p>
+
+            <h3>Time Period Savings:</h3>
+            <p><strong>Week:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
+            <p><strong>Month:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
+            <p><strong>Year:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
+        </div>
+    {% endif %}
+</body>
+</html>
