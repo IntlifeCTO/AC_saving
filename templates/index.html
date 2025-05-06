@@ -7,57 +7,53 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
             margin: 0;
             padding: 0;
-            background-color: #f4f7f6;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
         }
 
         h1 {
+            text-align: center;
             color: #333;
-            margin-top: 20px;
-            font-size: 2.5em;
         }
 
         .container {
-            background-color: white;
+            background-color: #fff;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             max-width: 600px;
-            margin-top: 20px;
+            width: 100%;
         }
 
         label {
+            font-weight: bold;
             display: block;
-            margin: 10px 0 5px;
-            color: #555;
-            font-size: 1.1em;
+            margin: 15px 0 5px;
         }
 
         input, select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         button {
+            margin-top: 20px;
             background-color: #007BFF;
             color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
+            font-size: 1em;
             cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s;
         }
 
         button:hover {
@@ -66,57 +62,48 @@
 
         .error {
             color: red;
+            font-weight: bold;
             margin-bottom: 15px;
-            font-size: 1.2em;
         }
 
         .result {
+            margin-top: 30px;
             background-color: #e7f7e7;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
         }
 
         .result h2 {
             margin-top: 0;
         }
 
-        .result p {
-            font-size: 1.1em;
-            color: #333;
+        .summary {
+            background-color: #f0f0ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
         }
 
-        .result p strong {
-            font-weight: bold;
+        .summary h2 {
+            margin-top: 0;
         }
 
-        .result .time-period {
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 2px solid #ddd;
-        }
-
-        .result .time-period p {
+        .summary p, .result p {
             margin: 5px 0;
+            font-size: 1.05em;
         }
 
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
+        @media (max-width: 600px) {
             .container {
                 padding: 20px;
-            }
-
-            h1 {
-                font-size: 2em;
             }
         }
     </style>
 </head>
 <body>
-    <h1>AC Energy Saving Calculator</h1>
-
     <div class="container">
+        <h1>AC Energy Saving Calculator</h1>
+
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}
@@ -147,40 +134,38 @@
         </form>
 
         {% if results %}
-            <div class="result">
+            <div class="summary">
                 <h2>Summary of Your Input</h2>
-                    <p><strong>Number of AC units:</strong> {{ results.num_ac }}</p>
-                    <p><strong>Hours ON per day:</strong> {{ results.hours_on }}</p>
-                    <p><strong>AC Horsepower:</strong> {{ results.ac_type }} HP</p>
-                    <p><strong>Current Temperature:</strong> {{ results.current_temp }} °C</p>
-                    <p><strong>Target Temperature:</strong> {{ results.target_temp }} °C</p>
-                    <p><strong>Electricity Cost:</strong> MYR {{ results.cost_per_kwh }} per kWh</p>
-                
-                <h2>Estimated Savings</h2>
-                    <p>Energy saved per day: <strong>{{ results.kwh_day | default(0) | round(2) }} kWh</strong></p>
-                    <p>Money saved per day: <strong>MYR {{ results.money_day | default(0) | round(2) }}</strong></p>
-                    <p>Carbon reduced per day: <strong>{{ results.carbon_day | default(0) | round(2) }} kg CO₂</strong></p>
+                <p><strong>Number of AC units:</strong> {{ results.num_ac }}</p>
+                <p><strong>Hours ON per day:</strong> {{ results.hours_on }}</p>
+                <p><strong>AC Horsepower:</strong> {{ results.ac_type }} HP</p>
+                <p><strong>Current Temperature:</strong> {{ results.current_temp }} °C</p>
+                <p><strong>Target Temperature:</strong> {{ results.target_temp }} °C</p>
+                <p><strong>Electricity Cost:</strong> MYR {{ results.cost_per_kwh }} per kWh</p>
+            </div>
 
-                <div class="time-period">
-                    <h3>Time Period Savings:</h3>
-                    <p><strong>Week:</strong> MYR {{ results.money_week | default(0) | round(2) }}, CO₂: {{ results.carbon_week | default(0) | round(2) }} kg</p>
-                    <p><strong>Month:</strong> MYR {{ results.money_month | default(0) | round(2) }}, CO₂: {{ results.carbon_month | default(0) | round(2) }} kg</p>
-                    <p><strong>Year:</strong> MYR {{ results.money_year | default(0) | round(2) }}, CO₂: {{ results.carbon_year | default(0) | round(2) }} kg</p>
-                </div>
+            <div class="result">
+                <h2>Estimated Savings</h2>
+                <p><strong>Energy saved per day:</strong> {{ results.kwh_day | round(2) }} kWh</p>
+                <p><strong>Money saved per day:</strong> MYR {{ results.money_day | round(2) }}</p>
+                <p><strong>Carbon reduced per day:</strong> {{ results.carbon_day | round(2) }} kg CO₂</p>
+
+                <h3>Time Period Savings</h3>
+                <p><strong>Week:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
+                <p><strong>Month:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
+                <p><strong>Year:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
             </div>
         {% else %}
             <div class="result">
                 <h2>Estimated Savings</h2>
-                <p>Energy saved per day: <strong>0 kWh</strong></p>
-                <p>Money saved per day: <strong>MYR 0</strong></p>
-                <p>Carbon reduced per day: <strong>0 kg CO₂</strong></p>
+                <p><strong>Energy saved per day:</strong> 0 kWh</p>
+                <p><strong>Money saved per day:</strong> MYR 0</p>
+                <p><strong>Carbon reduced per day:</strong> 0 kg CO₂</p>
 
-                <div class="time-period">
-                    <h3>Time Period Savings:</h3>
-                    <p><strong>Week:</strong> MYR 0, CO₂: 0 kg</p>
-                    <p><strong>Month:</strong> MYR 0, CO₂: 0 kg</p>
-                    <p><strong>Year:</strong> MYR 0, CO₂: 0 kg</p>
-                </div>
+                <h3>Time Period Savings</h3>
+                <p><strong>Week:</strong> MYR 0, CO₂: 0 kg</p>
+                <p><strong>Month:</strong> MYR 0, CO₂: 0 kg</p>
+                <p><strong>Year:</strong> MYR 0, CO₂: 0 kg</p>
             </div>
         {% endif %}
     </div>
