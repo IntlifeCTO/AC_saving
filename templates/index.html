@@ -134,11 +134,11 @@
                 <option value="2">2 HP</option>
             </select>
 
-            <label for="current_temp">Current Temperature:</label>
-            <input type="number" name="current_temp" required>
+            <label for="current_temp">Current Temperature (16°C - 28°C):</label>
+            <input type="number" name="current_temp" min="16" max="28" required>
 
-            <label for="target_temp">Target Temperature:</label>
-            <input type="number" name="target_temp" required>
+            <label for="target_temp">Target Temperature (18°C - 30°C):</label>
+            <input type="number" name="target_temp" min="18" max="30" required>
 
             <label for="cost_per_kwh">Electricity Cost per kWh (MYR):</label>
             <input type="number" name="cost_per_kwh" step="0.001" value="0.435" required>
@@ -149,15 +149,29 @@
         {% if results %}
             <div class="result">
                 <h2>Estimated Savings</h2>
-                <p>Energy saved per day: <strong>{{ results.kwh_day | round(2) }} kWh</strong></p>
-                <p>Money saved per day: <strong>MYR {{ results.money_day | round(2) }}</strong></p>
-                <p>Carbon reduced per day: <strong>{{ results.carbon_day | round(2) }} kg CO₂</strong></p>
+                <p>Energy saved per day: <strong>{{ results.kwh_day | default(0) | round(2) }} kWh</strong></p>
+                <p>Money saved per day: <strong>MYR {{ results.money_day | default(0) | round(2) }}</strong></p>
+                <p>Carbon reduced per day: <strong>{{ results.carbon_day | default(0) | round(2) }} kg CO₂</strong></p>
 
                 <div class="time-period">
                     <h3>Time Period Savings:</h3>
-                    <p><strong>Week:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
-                    <p><strong>Month:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
-                    <p><strong>Year:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
+                    <p><strong>Week:</strong> MYR {{ results.money_week | default(0) | round(2) }}, CO₂: {{ results.carbon_week | default(0) | round(2) }} kg</p>
+                    <p><strong>Month:</strong> MYR {{ results.money_month | default(0) | round(2) }}, CO₂: {{ results.carbon_month | default(0) | round(2) }} kg</p>
+                    <p><strong>Year:</strong> MYR {{ results.money_year | default(0) | round(2) }}, CO₂: {{ results.carbon_year | default(0) | round(2) }} kg</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="result">
+                <h2>Estimated Savings</h2>
+                <p>Energy saved per day: <strong>0 kWh</strong></p>
+                <p>Money saved per day: <strong>MYR 0</strong></p>
+                <p>Carbon reduced per day: <strong>0 kg CO₂</strong></p>
+
+                <div class="time-period">
+                    <h3>Time Period Savings:</h3>
+                    <p><strong>Week:</strong> MYR 0, CO₂: 0 kg</p>
+                    <p><strong>Month:</strong> MYR 0, CO₂: 0 kg</p>
+                    <p><strong>Year:</strong> MYR 0, CO₂: 0 kg</p>
                 </div>
             </div>
         {% endif %}
