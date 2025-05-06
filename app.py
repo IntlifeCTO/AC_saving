@@ -29,15 +29,21 @@ def index():
         carbon_saved_per_day = total_kwh_saved_per_day * 0.584  # Malaysia average CO₂ grid factor
 
         results = {
-            "kwh_day": total_kwh_saved_per_day,
-            "money_day": money_saved_per_day,
-            "carbon_day": carbon_saved_per_day,
-            "money_week": money_saved_per_day * 7,
-            "money_month": money_saved_per_day * 30,
-            "money_year": money_saved_per_day * 365,
-            "carbon_week": carbon_saved_per_day * 7,
-            "carbon_month": carbon_saved_per_day * 30,
-            "carbon_year": carbon_saved_per_day * 365
+            'num_ac': num_ac,
+            'hours_on': hours_on,
+            'ac_type': ac_type,
+            'current_temp': current_temp,
+            'target_temp': target_temp,
+            'cost_per_kwh': cost_per_kwh,
+            'kwh_day': kwh_saved,
+            'money_day': money_saved,
+            'carbon_day': carbon_reduced,
+            'money_week': money_saved * 7,
+            'carbon_week': carbon_reduced * 7,
+            'money_month': money_saved * 30,
+            'carbon_month': carbon_reduced * 30,
+            'money_year': money_saved * 365,
+            'carbon_year': carbon_reduced * 365,
         }
 
         return render_template("index.html", results=results)
