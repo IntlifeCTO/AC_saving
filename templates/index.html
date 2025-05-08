@@ -2,19 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AC Energy Saving Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7f6;
             margin: 0;
-            padding: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 40px 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
         h1 {
@@ -22,37 +28,25 @@
             color: #333;
         }
 
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
-        }
-
         label {
             font-weight: bold;
             display: block;
-            margin: 15px 0 5px;
+            margin-top: 15px;
         }
 
-        input, select {
+        input, select, button {
             width: 100%;
             padding: 10px;
+            margin-top: 5px;
             font-size: 1em;
-            border: 1px solid #ccc;
             border-radius: 5px;
+            border: 1px solid #ccc;
         }
 
         button {
-            margin-top: 20px;
             background-color: #007BFF;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
+            margin-top: 20px;
             cursor: pointer;
         }
 
@@ -63,40 +57,29 @@
         .error {
             color: red;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-top: 10px;
         }
 
-        .result {
+        .summary, .result {
             margin-top: 30px;
-            background-color: #e7f7e7;
             padding: 20px;
             border-radius: 10px;
-        }
-
-        .result h2 {
-            margin-top: 0;
         }
 
         .summary {
             background-color: #f0f0ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
         }
 
-        .summary h2 {
-            margin-top: 0;
+        .result {
+            background-color: #e7f7e7;
         }
 
         .summary p, .result p {
             margin: 5px 0;
-            font-size: 1.05em;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
+        canvas {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -130,30 +113,42 @@
             <label for="cost_per_kwh">Electricity Cost per kWh (MYR):</label>
             <input type="number" name="cost_per_kwh" step="0.001" value="0.435" required>
 
+            <label for="mode">Usage Mode:</label>
+            <select name="mode" required>
+                <option value="resident">Resident (All Days)</option>
+                <option value="office">Office (Weekdays Only)</option>
+            </select>
+
             <button type="submit">Calculate</button>
         </form>
 
         {% if results %}
             <div class="summary">
-                <h2>Summary of Your Input</h2>
+                <h2>User Input Summary</h2>
                 <p><strong>Number of AC units:</strong> {{ results.num_ac }}</p>
                 <p><strong>Hours ON per day:</strong> {{ results.hours_on }}</p>
                 <p><strong>AC Horsepower:</strong> {{ results.ac_type }} HP</p>
                 <p><strong>Current Temperature:</strong> {{ results.current_temp }} °C</p>
                 <p><strong>Target Temperature:</strong> {{ results.target_temp }} °C</p>
-                <p><strong>Electricity Cost:</strong> MYR {{ results.cost_per_kwh }} per kWh</p>
+                <p><strong>Electricity Cost:</strong> MYR {{ results.cost_per_kwh }}</p>
+                <p><strong>Usage Mode:</strong> {{ results.mode.title() }}</p>
             </div>
 
             <div class="result">
-                <h2>Estimated Savings</h2>
-                <p><strong>Energy saved per day:</strong> {{ results.kwh_day | round(2) }} kWh</p>
-                <p><strong>Money saved per day:</strong> MYR {{ results.money_day | round(2) }}</p>
-                <p><strong>Carbon reduced per day:</strong> {{ results.carbon_day | round(2) }} kg CO₂</p>
+                <h2>Estimated Daily Savings</h2>
+                <p><strong>Energy saved:</strong> {{ results.kwh_day | round(2) }} kWh</p>
+                <p><strong>Money saved:</strong> MYR {{ results.money_day | round(2) }}</p>
+                <p><strong>Carbon reduced:</strong> {{ results.carbon_day | round(2) }} kg CO₂</p>
 
-                <h3>Time Period Savings</h3>
-                <p><strong>Week:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
-                <p><strong>Month:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
-                <p><strong>Year:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
+                <h3>Time Period Savings ({{ results.mode.title() }} Mode)</h3>
+                <p><strong>Weekly:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
+                <p><strong>Monthly:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
+                <p><strong>Yearly:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
+            </div>
+
+            <div class="result">
+                <h2>Comparison: Without vs With Adjustment</h2>
+                <canvas id="savingsChart" width="400" height="250"></canvas>
             </div>
         {% else %}
             <div class="result">
@@ -169,5 +164,40 @@
             </div>
         {% endif %}
     </div>
+
+    {% if results %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('savingsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Energy (kWh)', 'Cost (MYR)'],
+                datasets: [
+                    {
+                        label: 'Without Adjustment',
+                        data: [{{ results.chart.original_kwh }}, {{ results.chart.original_cost }}],
+                        backgroundColor: '#ff4d4d'
+                    },
+                    {
+                        label: 'With Adjustment',
+                        data: [{{ results.chart.adjusted_kwh }}, {{ results.chart.adjusted_cost }}],
+                        backgroundColor: '#4CAF50'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Daily Energy and Cost Comparison' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+    {% endif %}
 </body>
 </html>
