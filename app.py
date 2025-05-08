@@ -53,11 +53,15 @@ def index():
                 'carbon_month': carbon_reduced * days_per_month,
                 'money_year': money_saved * days_per_year,
                 'carbon_year': carbon_reduced * days_per_year,
-                'chart': {
+               'chart': {
                     'adjusted_kwh': round(kwh_with_adjustment, 2),
                     'adjusted_cost': round(kwh_with_adjustment * cost_per_kwh, 2),
                     'original_kwh': round(kwh_no_adjustment, 2),
-                    'original_cost': round(money_no_adjustment, 2)
+                    'original_cost': round(money_no_adjustment, 2),
+                    'adjusted_kwh_month': round(kwh_with_adjustment * days_per_month, 2),
+                    'adjusted_cost_month': round(kwh_with_adjustment * days_per_month * cost_per_kwh, 2),
+                    'original_kwh_month': round(kwh_no_adjustment_month, 2),
+                    'original_cost_month': round(money_no_adjustment_month, 2)
                 }
             }
             return render_template("index.html", results=results)
