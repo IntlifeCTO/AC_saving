@@ -165,8 +165,11 @@
         {% endif %}
     </div>
 
-    {% if results %}
+   {% if results %}
+    <!-- Load Chart.js and its datalabels plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
     <script>
         const ctx = document.getElementById('savingsChart').getContext('2d');
         new Chart(ctx, {
@@ -176,12 +179,12 @@
                 datasets: [
                     {
                         label: 'Without Adjustment',
-                        data: [{{ results.chart.original_kwh }}, {{ results.chart.original_cost }}],
+                        data: [{{ results.chart.original_kwh_month }}, {{ results.chart.original_cost_month }}],
                         backgroundColor: '#ff4d4d'
                     },
                     {
                         label: 'With Adjustment',
-                        data: [{{ results.chart.adjusted_kwh }}, {{ results.chart.adjusted_cost }}],
+                        data: [{{ results.chart.adjusted_kwh_month }}, {{ results.chart.adjusted_cost_month }}],
                         backgroundColor: '#4CAF50'
                     }
                 ]
@@ -189,15 +192,34 @@
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'top' },
-                    title: { display: true, text: 'Daily Energy and Cost Comparison' }
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Monthly Energy and Cost Comparison'
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value) {
+                            return value.toFixed(2);
+                        },
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true
+                    }
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
     </script>
     {% endif %}
+
 </body>
 </html>
