@@ -3,223 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <title>AC Energy Saving Calculator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
+            margin: 40px;
+            background-color: #f9f9f9;
         }
-
+        h1, h2 {
+            color: #2c3e50;
+        }
         .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 650px;
+            max-width: 800px;
+            margin: auto;
+        }
+        input, select {
+            padding: 8px;
+            margin: 6px 0;
             width: 100%;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            font-size: 1em;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
         button {
-            background-color: #007BFF;
+            padding: 10px 15px;
+            background-color: #27ae60;
             color: white;
-            margin-top: 20px;
+            border: none;
             cursor: pointer;
         }
-
         button:hover {
-            background-color: #0056b3;
+            background-color: #219150;
         }
-
-        .error {
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .summary, .result {
+        .result, canvas {
             margin-top: 30px;
-            padding: 20px;
-            border-radius: 10px;
         }
-
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
         .summary {
-            background-color: #f0f0ff;
-        }
-
-        .result {
-            background-color: #e7f7e7;
-        }
-
-        .summary p, .result p {
-            margin: 5px 0;
-        }
-
-        canvas {
+            background-color: #eef;
+            padding: 10px;
             margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>AC Energy Saving Calculator</h1>
+<div class="container">
+    <h1>AC Energy Saving Calculator</h1>
+    <form method="POST">
+        <label>Number of AC Units:</label>
+        <input type="number" name="num_ac" required min="1">
 
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
+        <label>Hours AC is ON per day:</label>
+        <input type="number" name="hours_on" required min="1" max="24">
 
-        <form method="post">
-            <label for="num_ac">Number of AC units:</label>
-            <input type="number" name="num_ac" required>
+        <label>AC Horsepower (1.0 to 3.0):</label>
+        <input type="number" name="ac_type" min="1" max="3" step="0.5" required>
 
-            <label for="hours_on">Hours AC is ON per day:</label>
-            <input type="number" name="hours_on" step="0.1" required>
+        <label>Current Temperature (16-28):</label>
+        <input type="number" name="current_temp" required min="16" max="28">
 
-            <label for="ac_type">Type of AC (1 or 2 horsepower):</label>
-            <select name="ac_type" required>
-                <option value="1">1 HP</option>
-                <option value="2">2 HP</option>
-            </select>
+        <label>Target Temperature (18-30):</label>
+        <input type="number" name="target_temp" required min="18" max="30">
 
-            <label for="current_temp">Current Temperature (16°C - 28°C):</label>
-            <input type="number" name="current_temp" min="16" max="28" required>
+        <label>Electricity Cost per kWh (RM):</label>
+        <input type="number" step="0.001" name="cost_per_kwh" value="0.435" required>
 
-            <label for="target_temp">Target Temperature (18°C - 30°C):</label>
-            <input type="number" name="target_temp" min="18" max="30" required>
+        <label>Usage Mode:</label>
+        <select name="mode">
+            <option value="office">Office Mode (Weekdays Only)</option>
+            <option value="resident">Resident Mode (All Days)</option>
+        </select>
 
-            <label for="cost_per_kwh">Electricity Cost per kWh (MYR):</label>
-            <input type="number" name="cost_per_kwh" step="0.001" value="0.435" required>
+        <button type="submit">Calculate</button>
+    </form>
 
-            <label for="mode">Usage Mode:</label>
-            <select name="mode" required>
-                <option value="resident">Resident (All Days)</option>
-                <option value="office">Office (Weekdays Only)</option>
-            </select>
+    {% if results %}
+        <div class="summary">
+            <h2>Summary</h2>
+            <p><strong>Number of AC Units:</strong> {{ results.num_ac }}</p>
+            <p><strong>Hours ON per Day:</strong> {{ results.hours_on }}</p>
+            <p><strong>Horsepower:</strong> {{ results.ac_type }}</p>
+            <p><strong>Current Temperature:</strong> {{ results.current_temp }}°C</p>
+            <p><strong>Target Temperature:</strong> {{ results.target_temp }}°C</p>
+            <p><strong>Electricity Cost (RM/kWh):</strong> {{ results.cost_per_kwh }}</p>
+            <p><strong>Mode:</strong> {{ results.mode.capitalize() }} Mode</p>
+        </div>
 
-            <button type="submit">Calculate</button>
-        </form>
+        <div class="result">
+            <h2>Daily Savings</h2>
+            <p>Energy Saved: {{ results.kwh_day | round(2) }} kWh</p>
+            <p>Money Saved: RM {{ results.money_day | round(2) }}</p>
+            <p>CO₂ Reduced: {{ results.carbon_day | round(2) }} kg</p>
 
-        {% if results %}
-            <div class="summary">
-                <h2>User Input Summary</h2>
-                <p><strong>Number of AC units:</strong> {{ results.num_ac }}</p>
-                <p><strong>Hours ON per day:</strong> {{ results.hours_on }}</p>
-                <p><strong>AC Horsepower:</strong> {{ results.ac_type }} HP</p>
-                <p><strong>Current Temperature:</strong> {{ results.current_temp }} °C</p>
-                <p><strong>Target Temperature:</strong> {{ results.target_temp }} °C</p>
-                <p><strong>Electricity Cost:</strong> MYR {{ results.cost_per_kwh }}</p>
-                <p><strong>Usage Mode:</strong> {{ results.mode.title() }}</p>
-            </div>
+            <h2>Time Period Savings</h2>
+            <table>
+                <tr>
+                    <th>Time Period</th>
+                    <th>Money Saved (RM)</th>
+                    <th>CO₂ Reduced (kg)</th>
+                </tr>
+                <tr>
+                    <td>Weekly</td>
+                    <td>{{ results.money_week | round(2) }}</td>
+                    <td>{{ results.carbon_week | round(2) }}</td>
+                </tr>
+                <tr>
+                    <td>Monthly</td>
+                    <td>{{ results.money_month | round(2) }}</td>
+                    <td>{{ results.carbon_month | round(2) }}</td>
+                </tr>
+                <tr>
+                    <td>Yearly</td>
+                    <td>{{ results.money_year | round(2) }}</td>
+                    <td>{{ results.carbon_year | round(2) }}</td>
+                </tr>
+            </table>
 
-            <div class="result">
-                <h2>Estimated Daily Savings</h2>
-                <p><strong>Energy saved:</strong> {{ results.kwh_day | round(2) }} kWh</p>
-                <p><strong>Money saved:</strong> MYR {{ results.money_day | round(2) }}</p>
-                <p><strong>Carbon reduced:</strong> {{ results.carbon_day | round(2) }} kg CO₂</p>
+            <h2>Monthly Comparison With and Without Our System Adjustment</h2>
+            <p><strong>% Money Saved:</strong> 
+                {% set percent_saved = ((results.chart.original_cost_month - results.chart.adjusted_cost_month) / results.chart.original_cost_month) * 100 %}
+                {{ percent_saved | round(1) }}%
+            </p>
+            <canvas id="savingChart" width="400" height="250"></canvas>
+        </div>
+    {% endif %}
+</div>
 
-                <h3>Time Period Savings ({{ results.mode.title() }} Mode)</h3>
-                <p><strong>Weekly:</strong> MYR {{ results.money_week | round(2) }}, CO₂: {{ results.carbon_week | round(2) }} kg</p>
-                <p><strong>Monthly:</strong> MYR {{ results.money_month | round(2) }}, CO₂: {{ results.carbon_month | round(2) }} kg</p>
-                <p><strong>Yearly:</strong> MYR {{ results.money_year | round(2) }}, CO₂: {{ results.carbon_year | round(2) }} kg</p>
-            </div>
-
-            <div class="result">
-                <h2>Comparison: Without vs With Adjustment</h2>
-                <canvas id="savingsChart" width="400" height="250"></canvas>
-            </div>
-        {% else %}
-            <div class="result">
-                <h2>Estimated Savings</h2>
-                <p><strong>Energy saved per day:</strong> 0 kWh</p>
-                <p><strong>Money saved per day:</strong> MYR 0</p>
-                <p><strong>Carbon reduced per day:</strong> 0 kg CO₂</p>
-
-                <h3>Time Period Savings</h3>
-                <p><strong>Week:</strong> MYR 0, CO₂: 0 kg</p>
-                <p><strong>Month:</strong> MYR 0, CO₂: 0 kg</p>
-                <p><strong>Year:</strong> MYR 0, CO₂: 0 kg</p>
-            </div>
-        {% endif %}
-    </div>
-
-   {% if results %}
-    <!-- Load Chart.js and its datalabels plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-
-    <script>
-        const ctx = document.getElementById('savingsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Energy (kWh)', 'Cost (MYR)'],
-                datasets: [
-                    {
-                        label: 'Without Adjustment',
-                        data: [{{ results.chart.original_kwh_month }}, {{ results.chart.original_cost_month }}],
-                        backgroundColor: '#ff4d4d'
-                    },
-                    {
-                        label: 'With Adjustment',
-                        data: [{{ results.chart.adjusted_kwh_month }}, {{ results.chart.adjusted_cost_month }}],
-                        backgroundColor: '#4CAF50'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Monthly Energy and Cost Comparison'
-                    },
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'top',
-                        formatter: function(value) {
-                            return value.toFixed(2);
-                        },
-                        font: {
-                            weight: 'bold'
+<script>
+    {% if results %}
+    const ctx = document.getElementById('savingChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Without Adjustment', 'With Adjustment'],
+            datasets: [{
+                label: 'Monthly Energy Cost (RM)',
+                data: [{{ results.chart.original_cost_month }}, {{ results.chart.adjusted_cost_month }}],
+                backgroundColor: ['#e74c3c', '#2ecc71']
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'RM ' + context.raw.toFixed(2);
                         }
                     }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: function(value) {
+                        return 'RM ' + value.toFixed(2);
                     }
                 }
             },
-            plugins: [ChartDataLabels]
-        });
-    </script>
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cost (RM)'
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
     {% endif %}
-
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </body>
 </html>
