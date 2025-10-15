@@ -139,7 +139,7 @@
             data: {
                 labels: ['Without Adjustment', 'With Our System Adjustment'],
                 datasets: [{
-                    label: 'Monthly Energy Cost (RM)',
+                    label: 'Monthly Energy Cost (SGD)',
                     data: [originalCost, adjustedCost],
                     backgroundColor: ['#e74c3c', '#2ecc71']
                 }]
@@ -150,7 +150,7 @@
                     datalabels: {
                         anchor: 'end',
                         align: 'top',
-                        formatter: value => 'RM ' + value.toFixed(2),
+                        formatter: value => 'SGD ' + value.toFixed(2),
                         font: { weight: 'bold' },
                         color: '#000'
                     }
@@ -160,7 +160,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Cost (RM)'
+                            text: 'Cost (SGD)'
                         }
                     }
                 }
