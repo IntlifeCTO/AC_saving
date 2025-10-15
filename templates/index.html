@@ -48,7 +48,7 @@
             <input type="number" name="target_temp" class="form-control" min="18" max="30" required>
         </div>
         <div class="col-md-4">
-            <label class="form-label">Cost per kWh (RM)</label>
+            <label class="form-label">Cost per kWh (SGD)</label>
             <input type="number" name="cost_per_kwh" class="form-control" step="0.001" value="0.435" required>
         </div>
         <div class="col-md-12">
@@ -73,13 +73,13 @@
                 <li><strong>Current Temp:</strong> {{ results.current_temp }}°C</li>
                 <li><strong>Target Temp:</strong> {{ results.target_temp }}°C</li>
                 <li><strong>Mode:</strong> {{ results.mode|capitalize }} Mode</li>
-                <li><strong>Cost per kWh:</strong> RM {{ results.cost_per_kwh }}</li>
+                <li><strong>Cost per kWh:</strong> SGD {{ results.cost_per_kwh }}</li>
             </ul>
 
             <h4 class="mt-4">Estimated Daily Saving</h4>
             <ul>
                 <li><strong>Electricity Saved:</strong> {{ results.kwh_day | round(2) }} kWh</li>
-                <li><strong>Money Saved:</strong> RM {{ results.money_day | round(2) }}</li>
+                <li><strong>Money Saved:</strong> SGD {{ results.money_day | round(2) }}</li>
                 <li><strong>Carbon Reduced:</strong> {{ results.carbon_day | round(2) }} kg</li>
             </ul>
 
@@ -88,7 +88,7 @@
                 <thead>
                     <tr>
                         <th>Time Period</th>
-                        <th>Money Saved (RM)</th>
+                        <th>Money Saved (SGD)</th>
                         <th>Carbon Reduced (kg)</th>
                         <th>% Money Saved</th>
                     </tr>
